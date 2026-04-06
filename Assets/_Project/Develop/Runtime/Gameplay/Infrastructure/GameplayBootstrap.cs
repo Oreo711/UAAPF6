@@ -36,10 +36,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override IEnumerator Initialize()
         {
-            Debug.Log($"Вы попали на уровень {_inputArgs.LevelNumber}");
-
-            Debug.Log("Инициализация геймплейной сцены");
-
             _walletService = _container.Resolve<WalletService>();
 
             _entitiesLifeContext = _container.Resolve<EntitiesLifeContext>();
@@ -52,8 +48,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override void Run()
         {
-            Debug.Log("Старт геймплейной сцены");
-
             _testGameplay.Run();
         }
 
@@ -80,7 +74,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Infrastructure
                 if (_walletService.Enough(CurrencyTypes.Gold, 10))
                 {
                     _walletService.Spend(CurrencyTypes.Gold, 10);
-                    Debug.Log("Золота осталось: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
+                    Debug.Log("Remaining gold: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
                 }
             }
         }

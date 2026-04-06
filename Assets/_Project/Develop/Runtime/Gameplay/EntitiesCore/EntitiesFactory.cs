@@ -1,8 +1,10 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Mono;
+using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ApplyDamage;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Attack.Shoot;
 using Assets._Project.Develop.Runtime.Gameplay.Features.ContactTakeDamage;
+using Assets._Project.Develop.Runtime.Gameplay.Features.Hop;
 using Assets._Project.Develop.Runtime.Gameplay.Features.LifeCycle;
 using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
 using Assets._Project.Develop.Runtime.Gameplay.Features.Sensors;
@@ -231,6 +233,62 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
                 .AddSystem(new DeathMaskTouchDetectorSystem())
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())
+                .AddSystem(new SelfReleaseSystem(_entitiesLifeContext));
+
+            _entitiesLifeContext.Add(entity);
+
+            return entity;
+        }
+
+        public Entity CreateHopper (Vector3 position)
+        {
+            Entity entity = CreateEmpty();
+
+            _monoEntitiesFactory.Create(entity, position, "Entities/Hopper");
+
+            entity
+                .AddMaxHealth(new ReactiveVariable<float>(100))
+                .AddCurrentHealth(new ReactiveVariable<float>(100))
+                .AddCurrentEnergy(new ReactiveVariable<float>(100))
+                .AddMaxEnergy(new ReactiveVariable<float>(100))
+                .AddEnergyUsage(new ReactiveVariable<float>(20))
+                .AddInitialEnergyRegenerationCooldown(new ReactiveVariable<float>(5))
+                .AddCurrentEnergyRegenerationCooldown()
+                .AddHopRange(new ReactiveVariable<float>(5))
+                .AddHopRequest()
+                .AddHopEvent()
+                .AddSlamEvent()
+                .AddSlamRange(new ReactiveVariable<float>(3))
+                .AddSlamDamage(new ReactiveVariable<float>(50))
+                .AddIsDead()
+                .AddTakeDamageRequest()
+                .AddTakeDamageEvent();
+
+            ICompositeCondition canApplyDamage = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            ICompositeCondition mustDie = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
+
+            ICompositeCondition mustSelfRelease = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value));
+
+            ICompositeCondition canHop = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false))
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.EnergyUsage.Value));
+
+            entity.AddCanApplyDamage(canApplyDamage)
+                  .AddMustDie(mustDie)
+                  .AddMustSelfRelease(mustSelfRelease)
+                  .AddCanHop(canHop);
+
+            entity
+                .AddSystem(new HopSystem(_entitiesLifeContext, new NearestDamageableTargetSelector(entity)))
+                .AddSystem(new SlamSystem(_collidersRegistryService))
+                .AddSystem(new EnergyUsageSystem())
+                .AddSystem(new EnergyRegenerationSystem())
+                .AddSystem(new ApplyDamageSystem())
+                .AddSystem(new DeathSystem())
                 .AddSystem(new SelfReleaseSystem(_entitiesLifeContext));
 
             _entitiesLifeContext.Add(entity);

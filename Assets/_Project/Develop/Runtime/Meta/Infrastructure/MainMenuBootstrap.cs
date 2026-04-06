@@ -33,8 +33,6 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
         public override IEnumerator Initialize()
         {
-            Debug.Log("Инициализация сцены меню");
-
             _walletService = _container.Resolve<WalletService>();
 
             _playerDataProvider = _container.Resolve<PlayerDataProvider>();
@@ -45,7 +43,7 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
 
         public override void Run()
         {
-            Debug.Log("Старт сцены меню");
+
         }
 
         private void Update()
@@ -60,7 +58,7 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 _walletService.Add(CurrencyTypes.Gold, 10);
-                Debug.Log("Золота осталось: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
+                Debug.Log("Remaining gold: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -68,14 +66,14 @@ namespace Assets._Project.Develop.Runtime.Meta.Infrastructure
                 if(_walletService.Enough(CurrencyTypes.Gold, 10))
                 {
                     _walletService.Spend(CurrencyTypes.Gold, 10);
-                    Debug.Log("Золота осталось: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
+                    Debug.Log("Remaining gold: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
                 }
             }
 
             if (Input.GetKeyDown(KeyCode.S))
             {
                 _coroutinesPerformer.StartPerform(_playerDataProvider.Save());
-                Debug.Log("Сохранение было вызвано");
+                Debug.Log("Saved!");
             }
         }
     }

@@ -19,5 +19,22 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.InputFeature
                 return new Vector3(Input.GetAxisRaw(HorizontalAxisName), 0, Input.GetAxisRaw(VerticalAxisName));
             }
         }
+
+        public Vector3? PointPosition
+        {
+            get
+            {
+                if (IsEnabled == false)
+                {
+                    return null;
+                }
+
+                Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector3 processedMousePosition = new Vector3(mousePosition.x, 0, mousePosition.z);
+                return processedMousePosition;
+            }
+        }
+
+        public bool Holding => Input.GetMouseButtonDown(0);
     }
 }

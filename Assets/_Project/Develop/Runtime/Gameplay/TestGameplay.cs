@@ -1,9 +1,8 @@
 ﻿using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Gameplay.Features.AI;
-using Assets._Project.Develop.Runtime.Gameplay.Features.AI.States;
-using Assets._Project.Develop.Runtime.Gameplay.Features.MovementFeature;
 using Assets._Project.Develop.Runtime.Infrastructure.DI;
 using UnityEngine;
+
 
 namespace Assets._Project.Develop.Runtime.Gameplay
 {
@@ -14,7 +13,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         private BrainsFactory _brainsFactory;
 
         private Entity _entity;
-        private Entity _ghost;
+        private Entity _hero;
 
         private bool _isRunning;
 
@@ -27,11 +26,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay
 
         public void Run()
         {
-            _entity = _entitiesFactory.CreateHero(Vector3.zero);
-            _entity.AddCurrentTarget();
-            _brainsFactory.CreateMainHeroBrain(_entity, new NearestDamageableTargetSelector(_entity));
+            _hero = _entitiesFactory.CreateHero(new Vector3(-4, 0, 0));
+            _brainsFactory.CreateManualHeroBrain(_hero);
 
-            _ghost = _entitiesFactory.CreateGhost(Vector3.zero + Vector3.forward * 5);
+            _entity = _entitiesFactory.CreateHopper(Vector3.zero);
+            _brainsFactory.CreateHopperBrain(_entity);
 
             _isRunning = true;
         }
@@ -41,14 +40,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay
             if (_isRunning == false)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.Space))
-                _entity.TakeDamageRequest.Invoke(50);
-
             if (Input.GetKeyDown(KeyCode.R))
-                _entity.StartAttackRequest.Invoke();
-
-            if (Input.GetKeyDown(KeyCode.I))
-                _brainsFactory.CreateGhostBrain(_ghost);
+                _entity.HopRequest.Invoke();
         }
     }
 }
