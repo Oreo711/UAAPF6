@@ -23,10 +23,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI.States
 
 		public void Update (float deltaTime)
 		{
-			if (_inputService.PointPosition == null)
-			{
-				return;
-			}
 				_rotationDirection.Value = _inputService.PointPosition.Value - _transform.position;
 		}
 	}

@@ -631,24 +631,24 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 
 		public Assets._Project.Develop.Runtime.Gameplay.Features.Hop.HopRequest HopRequestC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Hop.HopRequest>();
 
-		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent HopRequest => HopRequestC.Value;
+		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3> HopRequest => HopRequestC.Value;
 
-		public bool TryGetHopRequest(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		public bool TryGetHopRequest(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3> value)
 		{
 			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Hop.HopRequest component);
 			if(result)
 				value = component.Value;
 			else
-				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent);
+				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3>);
 			return result;
 		}
 
 		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddHopRequest()
 		{
-			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Hop.HopRequest() { Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent() }); 
+			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Hop.HopRequest() { Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3>() }); 
 		}
 
-		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddHopRequest(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent value)
+		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddHopRequest(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3> value)
 		{
 			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Hop.HopRequest() {Value = value}); 
 		}
@@ -694,30 +694,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay.EntitiesCore
 		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddCanHop(Assets._Project.Develop.Runtime.Utilities.Conditions.ICompositeCondition value)
 		{
 			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Hop.CanHop() {Value = value}); 
-		}
-
-		public Assets._Project.Develop.Runtime.Gameplay.Features.Hop.TargetedHopRequest TargetedHopRequestC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Hop.TargetedHopRequest>();
-
-		public Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity> TargetedHopRequest => TargetedHopRequestC.Value;
-
-		public bool TryGetTargetedHopRequest(out Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity> value)
-		{
-			bool result = TryGetComponent(out Assets._Project.Develop.Runtime.Gameplay.Features.Hop.TargetedHopRequest component);
-			if(result)
-				value = component.Value;
-			else
-				value = default(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity>);
-			return result;
-		}
-
-		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddTargetedHopRequest()
-		{
-			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Hop.TargetedHopRequest() { Value = new Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity>() }); 
-		}
-
-		public Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity AddTargetedHopRequest(Assets._Project.Develop.Runtime.Utilities.Reactive.ReactiveEvent<Assets._Project.Develop.Runtime.Gameplay.EntitiesCore.Entity> value)
-		{
-			return AddComponent(new Assets._Project.Develop.Runtime.Gameplay.Features.Hop.TargetedHopRequest() {Value = value}); 
 		}
 
 		public Assets._Project.Develop.Runtime.Gameplay.Features.Hop.SlamDamage SlamDamageC => GetComponent<Assets._Project.Develop.Runtime.Gameplay.Features.Hop.SlamDamage>();

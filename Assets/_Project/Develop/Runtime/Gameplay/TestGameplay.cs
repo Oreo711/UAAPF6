@@ -12,7 +12,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         private EntitiesFactory _entitiesFactory;
         private BrainsFactory _brainsFactory;
 
-        private Entity _entity;
+        private Entity _hopper;
+        private Entity _aggressiveHopper;
         private Entity _hero;
 
         private bool _isRunning;
@@ -29,8 +30,11 @@ namespace Assets._Project.Develop.Runtime.Gameplay
             _hero = _entitiesFactory.CreateHero(new Vector3(-4, 0, 0));
             _brainsFactory.CreateManualHeroBrain(_hero);
 
-            _entity = _entitiesFactory.CreateHopper(Vector3.zero);
-            _brainsFactory.CreateHopperBrain(_entity);
+            _hopper = _entitiesFactory.CreateHopper(Vector3.zero);
+            _brainsFactory.CreateHopperBrain(_hopper);
+
+            _aggressiveHopper = _entitiesFactory.CreateHopper(new Vector3(4, 0, 0));
+            _brainsFactory.CreateAggressiveHopperBrain(_aggressiveHopper);
 
             _isRunning = true;
         }
@@ -39,9 +43,6 @@ namespace Assets._Project.Develop.Runtime.Gameplay
         {
             if (_isRunning == false)
                 return;
-
-            if (Input.GetKeyDown(KeyCode.R))
-                _entity.HopRequest.Invoke();
         }
     }
 }

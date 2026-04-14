@@ -1,6 +1,7 @@
 using Assets._Project.Develop.Runtime.Gameplay.EntitiesCore;
 using Assets._Project.Develop.Runtime.Utilities.Conditions;
 using Assets._Project.Develop.Runtime.Utilities.Reactive;
+using UnityEngine;
 
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features.Hop
@@ -37,7 +38,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Hop
 
 	public class HopRequest : IEntityComponent
 	{
-		public ReactiveEvent Value;
+		public ReactiveEvent<Vector3> Value;
 	}
 
 	public class HopEvent : IEntityComponent
@@ -48,10 +49,5 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Hop
 	public class CanHop : IEntityComponent
 	{
 		public ICompositeCondition Value;
-	}
-
-	public class TargetedHopRequest : IEntityComponent
-	{
-		public ReactiveEvent<Entity> Value;
 	}
 }

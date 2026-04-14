@@ -7,6 +7,7 @@ using Assets._Project.Develop.Runtime.Utilities.Reactive;
 using Assets._Project.Develop.Runtime.Utilities.Timer;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
@@ -157,7 +158,9 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             AIStateMachine           combatState   = CreateManualCombatStateMachine(entity);
             PlayerInputMovementState movementState = new PlayerInputMovementState(entity, _inputService);
 
-            ICondition mustEngageCombat    = new FuncCondition(() => _inputService.Direction == Vector3.zero);
+            ICompositeCondition mustEngageCombat    = new CompositeCondition()
+                                                      .Add(new FuncCondition(() => _inputService.Direction == Vector3.zero))
+                                                      .Add(new FuncCondition(() => _inputService.PointPosition != null));
             ICondition mustDisengageCombat = new FuncCondition(() => _inputService.Direction != Vector3.zero);
 
             AIStateMachine stateMachine = new AIStateMachine();
@@ -182,7 +185,8 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
 
             ICompositeCondition mustStopAttacking = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.MoveDirection.Value == Vector3.zero))
-                .Add(new FuncCondition(() => !_inputService.Holding));
+                .Add(new FuncCondition(() => !_inputService.Holding))
+                .Add(new FuncCondition(() => _inputService.PointPosition != null));
 
             AIStateMachine stateMachine = new AIStateMachine();
 
@@ -205,6 +209,54 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             return brain;
         }
 
+        public StateMachineBrain CreateAggressiveHopperBrain (Entity entity)
+        {
+            AIStateMachine    stateMachine = CreateTargetedHopStateMachine(entity);
+            StateMachineBrain brain        = new StateMachineBrain(stateMachine);
+
+            _brainsContext.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        private AIStateMachine CreateTargetedHopStateMachine (Entity entity)
+        {
+            List<IDisposable> disposables = new List<IDisposable>();
+
+            TargetedHopState hopState = new TargetedHopState(entity, _entitiesLifeContext, new LowestHealthTargetSelector(entity));
+            EmptyState emptyState = new EmptyState();
+
+            TimerService timer = _timerServiceFactory.Create(3f);
+            disposables.Add(timer);
+            disposables.Add(emptyState.Entered.Subscribe(timer.Restart));
+
+            ICompositeCondition canHop = new CompositeCondition()
+                                         .Add(new FuncCondition(() => timer.IsOver))
+                                         .Add(new FuncCondition(() => entity.CanHop.Evaluate()))
+                                         .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.MaxEnergy.Value * 0.4f));
+
+            bool hopEventInvoked = false;
+
+            disposables.Add(entity.HopEvent.Subscribe(() => hopEventInvoked = true));
+
+            ICondition hasHopped = new FuncCondition(() =>
+            {
+                bool result = hopEventInvoked;
+                hopEventInvoked = false;
+                return result;
+            });
+
+            AIStateMachine stateMachine = new AIStateMachine(disposables);
+
+            stateMachine.AddState(emptyState);
+            stateMachine.AddState(hopState);
+
+            stateMachine.AddTransition(emptyState, hopState, canHop);
+            stateMachine.AddTransition(hopState, emptyState, hasHopped);
+
+            return stateMachine;
+        }
+
         private AIStateMachine CreateHopStateMachine (Entity entity)
         {
             List<IDisposable> disposables = new List<IDisposable>();
@@ -219,7 +271,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.AI
             ICompositeCondition canHop = new CompositeCondition()
                 .Add(new FuncCondition(() => timer.IsOver))
                 .Add(new FuncCondition(() => entity.CanHop.Evaluate()))
-                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.EnergyUsage.Value * 2));
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= entity.MaxEnergy.Value * 0.4f));
 
             bool hopEventInvoked = false;
 

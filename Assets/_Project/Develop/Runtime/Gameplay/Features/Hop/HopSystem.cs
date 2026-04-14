@@ -13,7 +13,7 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Hop
 {
 	public class HopSystem : IInitializableSystem, IDisposableSystem
 	{
-		private ReactiveEvent           _hopRequest;
+		private ReactiveEvent<Vector3>  _hopRequest;
 		private ReactiveEvent           _targetedHopRequest;
 		private ReactiveEvent           _hopEvent;
 		private ReactiveVariable<float> _hopRange;
@@ -54,33 +54,17 @@ namespace Assets._Project.Develop.Runtime.Gameplay.Features.Hop
 				return;
 			}
 
-			Vector3 hopDirection = entity.Transform.position - _transform.position;
-			float hopDistance = Mathf.Min(_hopRange.Value, hopDirection.magnitude);
-			Vector3 newPosition = _transform.position + hopDirection.normalized * hopDistance;
-
-			_transform.position = newPosition;
-
 			_hopEvent.Invoke();
 		}
 
-		private void OnHopRequest ()
+		private void OnHopRequest (Vector3 position)
 		{
 			if (!_canHop.Evaluate())
 			{
 				return;
 			}
 
-			if (_entitiesLifeContext.Entities.Count > 1)
-			{
-				TargetedHop(_targetSelector.SelectTargetFrom(_entitiesLifeContext.Entities));
-				return;
-			}
-
-			Vector2 positionOffset = Random.insideUnitCircle.normalized * Random.Range(0, _hopRange.Value);
-			Vector3 processedPositionOffset = new Vector3(positionOffset.x, 0, positionOffset.y);
-			Vector3 newPosition = _transform.position + processedPositionOffset;
-
-			_transform.position = newPosition;
+			_transform.position = position;
 
 			_hopEvent.Invoke();
 		}
